@@ -28,6 +28,9 @@
             <a href="{% url 'edit' post.id %}" class="text-yellow-500 ml-2">Edit</a>
             {% endif %}
             <a href="{% url 'detail' post.id %}" class="text-blue-500 ml-2">View</a>
+            <a href="{% url 'like' post.id %}" class="text-pink-500">
+                ❤️ {{ post.total_likes }}
+            </a>
         </div>
         {% endfor %}
 

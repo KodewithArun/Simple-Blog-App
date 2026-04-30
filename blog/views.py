@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render , redirect , get_object_or_404
 from django.http import HttpResponse
-from .models import Post
+from .models import Post , Comment
 from .forms import PostForm
 
 def signup(request):
@@ -55,8 +55,9 @@ def create_post(request):
         content = request.POST.get("content")
 
         Post.objects.create(
-            title=title,    
-            content=content
+            title=title,
+            content=content,
+            author=request.user
         )
 
         return redirect('home')
@@ -88,3 +89,33 @@ def edit_post(request, id):
 
     return render(request, 'edit_post.html', {'post': post})
 
+
+# like and dislike the post 
+
+@login_required
+def like_post(request, id):
+    post = get_object_or_404(Post, id=id)
+
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+
+    return redirect('home')
+
+# Comment the post 
+
+@login_required
+def add_comment(request, id):
+    post = get_object_or_404(Post, id=id)
+
+    if request.method == "POST":
+        text = request.POST.get("text")
+
+        Comment.objects.create(
+            post=post,
+            user=request.user,
+            text=text
+        )
+
+    return redirect('detail', id=id)
